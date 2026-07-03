@@ -139,7 +139,7 @@ void Graph::write_genotypes(string filename, const vector<GenotypingResult>& gen
 		genotyping_outfile << "##INFO=<ID=UK,Number=1,Type=Integer,Description=\"Total number of unique kmers.\">" << endl;
 		genotyping_outfile << "##INFO=<ID=AK,Number=R,Type=Integer,Description=\"Number of unique kmers per allele. Will be -1 for alleles not covered by any input haplotype path\">" << endl;
 		genotyping_outfile << "##INFO=<ID=MA,Number=1,Type=Integer,Description=\"Number of alleles missing in panel haplotypes.\">" << endl;
-		genotyping_outfile << "##INFO=<ID=ID,Number=A,Type=String,Description=\"Variant IDs.\">" << endl;
+		genotyping_outfile << "##INFO=<ID=ID,Number=R,Type=String,Description=\"Variant IDs.\">" << endl;
 		genotyping_outfile << "##FORMAT=<ID=GT,Number=1,Type=String,Description=\"Genotype\">" << endl;
 		genotyping_outfile << "##FORMAT=<ID=GQ,Number=1,Type=Integer,Description=\"Genotype quality: phred scaled probability that the genotype is wrong.\">" << endl;
 		genotyping_outfile << "##FORMAT=<ID=GL,Number=G,Type=Float,Description=\"Comma-separated log10-scaled genotype likelihoods for absent, heterozygous, homozygous.\">" << endl;
@@ -189,7 +189,7 @@ void Graph::write_genotypes(string filename, const vector<GenotypingResult>& gen
 			vector<string> alt_alleles;
 			alt_alleles.reserve(nr_alleles);
 			vector<unsigned short> defined_alleles = {0};
-			for (size_t i = 1; i < nr_alleles; ++i) {
+			for (size_t i = 0; i < nr_alleles; ++i) {
 				// skip alleles that are undefined
 				if (!v.is_undefined_allele(i)) {
 					alt_alleles.push_back(v.get_allele_string(i));
@@ -349,7 +349,7 @@ void Graph::write_phasing(string filename, const vector<GenotypingResult>& genot
 			vector<string> alt_alleles;
 			alt_alleles.reserve(nr_alleles);
 			vector<unsigned short> defined_alleles = {0};
-			for (size_t i = 1; i < nr_alleles; ++i) {
+			for (size_t i = 0; i < nr_alleles; ++i) {
 				// skip alleles that are undefined
 				if (! v.is_undefined_allele(i)) {
 					alt_alleles.push_back( v.get_allele_string(i));
@@ -493,7 +493,7 @@ void Graph::write_sampled_panel(string filename, const vector<SampledPanel>& sam
 
 			vector<string> alt_alleles;
 			vector<unsigned short> defined_alleles = {0};
-			for (size_t i = 1; i < nr_alleles; ++i) {
+			for (size_t i = 0; i < nr_alleles; ++i) {
 				// skip alleles that are undefined
 				if (! v.is_undefined_allele(i)) {
 					alt_alleles.push_back(v.get_allele_string(i));
