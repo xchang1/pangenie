@@ -478,7 +478,7 @@ if __name__== "__main__":
 				out_bi.write(line)
 				continue
 			if line.startswith('#'):
-				header_id = '##INFO=<ID=ID,Number=A,Type=String,Description=\"Variant IDs per ALT allele.\">\n'
+				header_id = '##INFO=<ID=ID,Number=R,Type=String,Description=\"Variant IDs per ALT allele.\">\n'
 				out_multi.write(header_id)
 				out_bi.write(header_id)
 				out_multi.write(line)
