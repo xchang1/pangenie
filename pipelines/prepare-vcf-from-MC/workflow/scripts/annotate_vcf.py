@@ -122,6 +122,14 @@ def define_id(ref_allele, alt_allele, chrom, position, index):
 			varlen = str(max(len_ref, len_alt))
 	return '-'.join([chrom, str(position), vartype, str(index), varlen])
 
+def define_ref_id(ref_allele, chrom, position, index):
+	"""
+	Define an unique identifier for a variant allele.
+	"""
+	vartype = 'REF'
+	return '-'.join([chrom, str(position), vartype, str(index), str(0)])
+
+
 
 def detect_variants(ref_traversal, alt_traversal):
 	"""
@@ -303,6 +311,7 @@ def decompose(line, gfa):
 	"""
 	decomposes a large bubble into the ones nested inside (if any).
 	"""
+
 	fields = line.split()
 	info_fields = parse_info(fields)
 	assert 'AT' in info_fields
@@ -315,8 +324,9 @@ def decompose(line, gfa):
 	# if a biallelic record assign ID and print directly
 	if nr_alleles == 2:
 		# biallelic variant only assign ID
+		ref_id = define_ref_id(fields[3], fields[0], fields[1], allele_traversals[0])
 		new_id = define_id(fields[3], fields[4], fields[0], fields[1], allele_traversals[1])
-		info_fields['ID'] = new_id
+		info_fields['ID'] = ','.join([ref_id, new_id])
 		updated_info = info_to_string(info_fields)
 		fields[7] = updated_info
 		updated_line = '\t'.join(fields)
@@ -374,6 +384,12 @@ def decompose(line, gfa):
 				allele_to_ids[i+1].append(allele_id)
 
 
+		# Add the reference id
+		ref_id = define_ref_id(fields[3], fields[0], fields[1], allele_traversals[0])
+		id_to_alleles[ref_id] = (ref_string, ref_string, ref_pos, traversal_to_string(ref_allele), traversal_to_string(ref_allele))
+		id_to_index[ref_id].append(0)
+		allele_to_ids[0].append(ref_id)
+
 		# generate one line per single ID with adjusted genotypes
 		for allele_id in id_to_alleles:
 			updated_fields = [
@@ -405,7 +421,7 @@ def decompose(line, gfa):
 			biallelic_records.append('\t'.join(updated_fields))
 		# generate multiallelic record that is annotated with IDs
 		# add ID field to INFO
-		info_fields['ID'] = ','.join([':'.join(allele_to_ids[i]) for i in range(1,nr_alleles)])
+		info_fields['ID'] = ','.join([':'.join(allele_to_ids[i]) for i in range(0,nr_alleles)])
 		fields[7] = info_to_string(info_fields)
 		return '\t'.join(fields), biallelic_records
 
