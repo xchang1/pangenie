@@ -77,10 +77,10 @@ void Graph::add_variant_cluster(vector<shared_ptr<Variant>>* cluster, vector<vec
 						if (a.contains_undefined()) continue;
 						defined_alleles.push_back(a);
 					}
-					assert (defined_alleles.size() == (variant_ids[i].size()+1));
-					insert_ids(defined_alleles, variant_ids[i], true);
+					assert (defined_alleles.size() == (variant_ids[i].size()));
+					insert_ids(defined_alleles, variant_ids[i], false);
 				} else {
-					insert_ids(cluster->at(i)->allele_sequences.at(0), variant_ids[i], true);
+					insert_ids(cluster->at(i)->allele_sequences.at(0), variant_ids[i], false);
 				}
 			} else {
 				this->variant_ids.push_back(vector<string>());
@@ -493,7 +493,7 @@ void Graph::write_sampled_panel(string filename, const vector<SampledPanel>& sam
 
 			vector<string> alt_alleles;
 			vector<unsigned short> defined_alleles = {0};
-			for (size_t i = 0; i < nr_alleles; ++i) {
+			for (size_t i = 1; i < nr_alleles; ++i) {
 				// skip alleles that are undefined
 				if (! v.is_undefined_allele(i)) {
 					alt_alleles.push_back(v.get_allele_string(i));
