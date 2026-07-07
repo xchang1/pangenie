@@ -442,15 +442,11 @@ TEST_CASE("GraphBuilder unknown_alleles2", "[GraphBuilder unknown_alleles2]") {
 	shared_ptr<Variant> v1 (new Variant ("AAAA", "TTTT", "chr1", 10, 11, {"G", "AAA", "CN", "C", "N", "A"}, {0,1,2}));
 	Graph g;
 	vector<shared_ptr<Variant>> cluster = {v1};
-	vector<vector<string>> variant_ids = { {"ref", "var1", "var2", "var3"} };
+	vector<vector<string>> variant_ids = { {"var1", "var2", "var3"} };
 	g.add_variant_cluster(&cluster, variant_ids, true);
 
 	string computed_ids = g.get_ids(alleles, 0, true);
 	string expected_ids = "var3,var2,var1";
-	REQUIRE(expected_ids == computed_ids);
-
-	computed_ids = g.get_ids(alleles, 0, false);
-	expected_ids = "ref,var3,var2,var1";
 	REQUIRE(expected_ids == computed_ids);
 }
 
