@@ -181,8 +181,14 @@ VariantReader::VariantReader(string filename, string reference_filename, size_t 
 		}
 
 		// store mapping of alleles to variant ids
+		vector<string> all_var_ids;
+		parse_info_fields(all_var_ids, tokens[7]);
+		std::string ref_id = ".";
 		vector<string> var_ids;
-		parse_info_fields(var_ids, tokens[7]);
+		if (!all_var_ids.empty()) {
+			ref_id = all_var_ids.front();
+			var_ids.insert(var_ids.end(), std::make_move_iterator(all_var_ids.begin()+1), std::make_move_iterator(all_var_ids.end()));
+		}
 		if (!var_ids.empty()) {
 			insert_ids(current_chrom, alleles, var_ids, true);
 		} else {
@@ -237,7 +243,7 @@ VariantReader::VariantReader(string filename, string reference_filename, size_t 
 		DnaSequence right_flank;
 		this->fasta_reader.get_subsequence(current_chrom, current_end_pos, current_end_pos + kmer_size - 1, right_flank);
 		// add Variant to variant_cluster
-		shared_ptr<Variant> variant = shared_ptr<Variant>(new Variant(left_flank, right_flank, current_chrom, current_start_pos, current_end_pos, alleles, paths));
+		shared_ptr<Variant> variant = shared_ptr<Variant>(new Variant(left_flank, right_flank, current_chrom, current_start_pos, current_end_pos, alleles, paths, ref_id));
 		variant_cluster.push_back(variant);
 		previous_chrom = current_chrom;
 		previous_end_pos = current_end_pos;

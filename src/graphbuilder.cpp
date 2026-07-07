@@ -199,6 +199,7 @@ void GraphBuilder::construct_graph(std::string filename, FastaReader* fasta_read
 		}
 
 		// store mapping of alleles to variant ids
+		// Note that this includes the reference id as the first item
 		vector<string> var_ids;
 		builder_parse_info_fields(var_ids, tokens[7]);
 
@@ -250,9 +251,15 @@ void GraphBuilder::construct_graph(std::string filename, FastaReader* fasta_read
 		DnaSequence right_flank;
 		current_graph->get_fasta_reader().get_subsequence(current_chrom, current_end_pos, current_end_pos + kmer_size - 1, right_flank);
 		// add Variant to variant_cluster
-		shared_ptr<Variant> variant = shared_ptr<Variant>(new Variant(left_flank, right_flank, current_chrom, current_start_pos, current_end_pos, alleles, paths));
+		shared_ptr<Variant> variant = shared_ptr<Variant>(new Variant(left_flank, right_flank, current_chrom, current_start_pos, current_end_pos, alleles, paths, 
+																		var_ids.empty() ? "." : var_ids.front()));
 		variant_cluster.push_back(variant);
-		variant_cluster_ids.push_back(var_ids);
+		if (var_ids.empty()) {
+			variant_cluster_ids.emplace_back();
+		} else {
+			// Since the list of variant ids included the reference, skip the first item
+			variant_cluster_ids.emplace_back(std::make_move_iterator(var_ids.begin()+1), std::make_move_iterator(var_ids.end()));
+		}
 		previous_chrom = current_chrom;
 		previous_end_pos = current_end_pos;
 
